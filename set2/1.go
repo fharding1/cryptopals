@@ -5,10 +5,6 @@ import (
 	"slices"
 )
 
-const (
-	EndOfTransmission byte = 0x04
-)
-
 func PKCS7Pad(x []byte, blen uint) []byte {
 	missing := (-int(len(x))) % int(blen)
 	if missing < 0 {
@@ -17,7 +13,7 @@ func PKCS7Pad(x []byte, blen uint) []byte {
 
 	pad := make([]byte, missing)
 	for i := 0; i < len(pad); i++ {
-		pad[i] = EndOfTransmission
+		pad[i] = byte(missing)
 	}
 
 	return slices.Concat(x, pad)
@@ -25,4 +21,5 @@ func PKCS7Pad(x []byte, blen uint) []byte {
 
 func main() {
 	fmt.Printf("%d\n", PKCS7Pad([]byte("YELLOW SUBMARINE"), 20))
+	fmt.Printf("%d\n", PKCS7Pad([]byte("YELLOW SUBMA"), 20))
 }
