@@ -93,14 +93,16 @@ func (p *Profile) Decode(str string) error {
 	return nil
 }
 
-func PKCS7Pad(x []byte, blen uint) []byte {
+func PKCS7Pad(x []byte, blen int) []byte {
 	missing := (-int(len(x))) % int(blen)
 	if missing < 0 {
 		missing += int(blen)
+	} else if missing == 0 {
+		missing = 16
 	}
 
 	pad := make([]byte, missing)
-	for i := 0; i < len(pad); i++ {
+	for i := range len(pad) {
 		pad[i] = byte(missing)
 	}
 

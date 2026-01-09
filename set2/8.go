@@ -13,10 +13,12 @@ func PKCS7Pad(x []byte, blen int) []byte {
 	missing := (-int(len(x))) % int(blen)
 	if missing < 0 {
 		missing += int(blen)
+	} else if missing == 0 {
+		missing = 16
 	}
 
 	pad := make([]byte, missing)
-	for i := 0; i < len(pad); i++ {
+	for i := range len(pad) {
 		pad[i] = byte(missing)
 	}
 
@@ -29,12 +31,12 @@ func PKCS7Strip(x []byte, blen int) ([]byte, error) {
 	}
 
 	if len(x) == 0 {
-		return nil, nil
+		return nil, errors.New("pkcs7 padded string cannot have length zero")
 	}
 
 	lastByte := int(x[len(x)-1])
-	if lastByte >= blen {
-		return x, nil
+	if lastByte < 1 || lastByte > blen {
+		return nil, errors.New("pkcs7 last byte must satisfy 1 <= last byte <= blen")
 	}
 
 	for i := len(x) - lastByte; i < len(x); i++ {
